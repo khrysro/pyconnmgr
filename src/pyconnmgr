@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     title:          Python Connections Manager
@@ -38,10 +38,10 @@ APPCONFDIR  = "/.pyconnmgr"
 GLADE_FILE  = "glade/pyconnmgr.glade"
 HOSTSFILE   = os.environ["HOME"] + APPCONFDIR + "/hostsfile.db"
 
-print "\n\n" + APPNAME + " version " + APPVERSION + "\n"
-print APPNAME + " comes with ABSOLUTELY NO WARRANTY, is licensed under the"
-print "GNU GENERAL PUBLIC LICENSE and is free and open source software."
-print "http://www.thelupine.com\n\n"
+print("\n\n" + APPNAME + " version " + APPVERSION + "\n")
+print(APPNAME + " comes with ABSOLUTELY NO WARRANTY, is licensed under the")
+print("GNU GENERAL PUBLIC LICENSE and is free and open source software.")
+print("http://www.thelupine.com\n\n")
 
 class ConnectionManager:
     def check_appconfig_dir(self):
@@ -58,7 +58,7 @@ class ConnectionManager:
                 errormessage = 'Unable to create configuration directory:\n' \
                                 + appsettingsdir + \
                                 '\nYou will not be able to save hosts.\n\n'
-                print errormessage
+                print(errormessage)
                 self.error_message_label.set_text(errormessage)
                 self.error_dialog.show()
         return appsettingsdir
@@ -159,7 +159,7 @@ class ConnectionManager:
                 errormessage = 'Unable to connect to sqlite3 file:\n' \
                                 + HOSTSFILE + \
                                 '\nYou will not be able to save hosts.\n\n'
-                print errormessage
+                print(errormessage)
                 self.error_message_label.set_text(errormessage)
                 self.error_dialog.show()
             else:
@@ -535,7 +535,7 @@ class ConnectionManager:
                 if re.search(hostname, newhostname):
                     foundnewhostname = 1
             if not foundnewhostname:
-                print "Deleteing " + hostname + " from sqlite3\n"
+                print("Deleteing " + hostname + " from sqlite3\n")
                 sqlconn = sqlite3.connect(HOSTSFILE)
                 sqlcursor = sqlconn.cursor()
                 sqlcursor.execute('DELETE FROM hosts WHERE name=?', (hostname,))
@@ -698,7 +698,7 @@ class ConnectionManager:
         else:
             errormessage = 'I need a host!!!  Please enter the IP or \
                             DNS name of a host in the HOST: field.'
-            print errormessage
+            print(errormessage)
             self.error_message_textview.set_text(errormessage)
             self.error_dialog.show()
 
