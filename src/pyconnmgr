@@ -10,33 +10,38 @@
     description:    Python/qt frontend to the SSH/SFTP, FTP, SMB, VNC, and RDP.
     
     license:        GPL3
-    pyconnmgrqt is free software: you can redistribute it and/or modify
+    pyconnmgr-qt is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    pyconnmgrqt is distributed in the hope that it will be useful,
+    pyconnmgr-qt is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with pyconnmgrqt.  If not, see <http://www.gnu.org/licenses/>.
+    along with pyconnmgr-qt.  If not, see <http://www.gnu.org/licenses/>.
 
 """
 
 import sys, os, glob, signal, time, re, sqlite3, pexpect, gi
-gi.require_version("pyqt5", "3.0")
+gi.require_version("PyQt5", "3.0")
 from subprocess import Popen, PIPE
+from qt.about_dialog import *
+from qt.error_dialog import *
+from qt.find_dialog import *
+from qt.hosts_dialog import *
+from qt.main_dialog import *
 from PyQt5 import QtWidgets, QtCore, QtGui
 from gi.repository import PyQt5
 
-APPNAME     = "pyconnmgrqt"
+APPNAME     = "pyconnmgr-qt"
 APPVERSION  = "0.0.1.DEV"
 DBVERSION   = APPNAME + APPVERSION.replace(".","")
 APPCONFDIR  = "/.pyconnmgr"
 #GLADE_FILE  = "/usr/share/pyconnmgr/pyconnmgr.glade"
-GLADE_FILE  = "glade/pyconnmgr.glade"
+#GLADE_FILE  = "glade/pyconnmgr.glade"
 HOSTSFILE   = os.environ["HOME"] + APPCONFDIR + "/hostsfile.db"
 
 print("\n\n" + APPNAME + " version " + APPVERSION + "\n")
@@ -707,8 +712,9 @@ class ConnectionManager:
     def __init__(self, parent=None, message=""):
 
         'modificar desde aqui a Qt'
-        #gtkbuilder = Gtk.Builder()
-        #gtkbuilder.add_from_file(GLADE_FILE)
+        gtkbuilder = PyQt5.QUiLoader()  #Gtk.Builder()
+
+        gtkbuilder.load(GLADE_FILE, self)  #gtkbuilder.add_from_file(GLADE_FILE)
 
         #initialize the glade objects
 
