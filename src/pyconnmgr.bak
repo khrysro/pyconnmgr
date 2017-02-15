@@ -1,48 +1,47 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 """
-    title:          Python Connections Manager qt
+    title:          Python Connections Manager
 
-    date:           .2017
+    date:           06.23.2015
 
-    author:         KhrysRo, forked from Lupine
+    author:         Lupine  - http://www.thelupine.com
 
-    description:    Python/qt frontend to the SSH/SFTP, FTP, SMB, VNC, and RDP.
+    description:    Python/GTK/Glade frontend to the SSH/SFTP, FTP, SMB, VNC, and RDP.
     
     license:        GPL3
-    pyconnmgrqt is free software: you can redistribute it and/or modify
+    pyconnmgr is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    pyconnmgrqt is distributed in the hope that it will be useful,
+    pyconnmgr is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with pyconnmgrqt.  If not, see <http://www.gnu.org/licenses/>.
+    along with pyconnmgr.  If not, see <http://www.gnu.org/licenses/>.
 
 """
 
 import sys, os, glob, signal, time, re, sqlite3, pexpect, gi
-gi.require_version("pyqt5", "3.0")
+gi.require_version("Gtk", "3.0")
 from subprocess import Popen, PIPE
-from PyQt5 import QtWidgets, QtCore, QtGui
-from gi.repository import PyQt5
+from gi.repository import Gtk
 
-APPNAME     = "pyconnmgrqt"
-APPVERSION  = "0.0.1.DEV"
+APPNAME     = "pyconnmgr"
+APPVERSION  = "4.0.8.DEV"
 DBVERSION   = APPNAME + APPVERSION.replace(".","")
 APPCONFDIR  = "/.pyconnmgr"
 #GLADE_FILE  = "/usr/share/pyconnmgr/pyconnmgr.glade"
 GLADE_FILE  = "glade/pyconnmgr.glade"
 HOSTSFILE   = os.environ["HOME"] + APPCONFDIR + "/hostsfile.db"
 
-print("\n\n" + APPNAME + " version " + APPVERSION + "\n")
-print(APPNAME + " comes with ABSOLUTELY NO WARRANTY, is licensed under the")
-print("GNU GENERAL PUBLIC LICENSE and is free and open source software.")
-print("http://www.github.com/khrysro\n\n")
+print "\n\n" + APPNAME + " version " + APPVERSION + "\n"
+print APPNAME + " comes with ABSOLUTELY NO WARRANTY, is licensed under the"
+print "GNU GENERAL PUBLIC LICENSE and is free and open source software."
+print "http://www.thelupine.com\n\n"
 
 class ConnectionManager:
     def check_appconfig_dir(self):
@@ -59,7 +58,7 @@ class ConnectionManager:
                 errormessage = 'Unable to create configuration directory:\n' \
                                 + appsettingsdir + \
                                 '\nYou will not be able to save hosts.\n\n'
-                print(errormessage)
+                print errormessage
                 self.error_message_label.set_text(errormessage)
                 self.error_dialog.show()
         return appsettingsdir
@@ -160,7 +159,7 @@ class ConnectionManager:
                 errormessage = 'Unable to connect to sqlite3 file:\n' \
                                 + HOSTSFILE + \
                                 '\nYou will not be able to save hosts.\n\n'
-                print(errormessage)
+                print errormessage
                 self.error_message_label.set_text(errormessage)
                 self.error_dialog.show()
             else:
@@ -445,7 +444,7 @@ class ConnectionManager:
     def populate_cmbox_hostlist(self):
         """Read in the HOSTSFILE and populate the drop down hosts list"""
         hostnames = self.read_hostsfile()
-        hosts = QtGui.QStandardItemModel(str)
+        hosts = Gtk.ListStore(str)
         for hostname in hostnames:
             hosts.prepend ([hostname])
         self.host_entry_cmbox.set_model(hosts)
@@ -454,8 +453,8 @@ class ConnectionManager:
     def populate_cmbox_hostlist_entry_completion(self):
         """Read in the HOSTSFILE and populate the entry completion"""
         hostnames = self.read_hostsfile()
-        completion = QtWidgets.QCompleter()
-        hosts = QtGui.QStandardItemModel(str)
+        completion = Gtk.EntryCompletion()
+        hosts = Gtk.ListStore(str)
         for hostname in hostnames:
             iter = hosts.append()
             hosts.set(iter, 0, hostname)
@@ -486,7 +485,7 @@ class ConnectionManager:
         txtbuffer = self.hosts_txtview.get_buffer()
         found_tag = txtbuffer.create_tag(foreground='red', background='black')
         start = txtbuffer.get_start_iter()
-        first, last = start.forward_search(findentry)#, Gtk.TEXT_SEARCH_TEXT_ONLY)
+        first, last = start.forward_search(findentry, Gtk.TEXT_SEARCH_TEXT_ONLY)
         if first:
             self.hosts_txtview.scroll_to_iter(first, 0.0)
             txtbuffer.place_cursor(first)
@@ -536,7 +535,7 @@ class ConnectionManager:
                 if re.search(hostname, newhostname):
                     foundnewhostname = 1
             if not foundnewhostname:
-                print("Deleteing " + hostname + " from sqlite3\n")
+                print "Deleteing " + hostname + " from sqlite3\n"
                 sqlconn = sqlite3.connect(HOSTSFILE)
                 sqlcursor = sqlconn.cursor()
                 sqlcursor.execute('DELETE FROM hosts WHERE name=?', (hostname,))
@@ -699,20 +698,16 @@ class ConnectionManager:
         else:
             errormessage = 'I need a host!!!  Please enter the IP or \
                             DNS name of a host in the HOST: field.'
-            print(errormessage)
+            print errormessage
             self.error_message_textview.set_text(errormessage)
             self.error_dialog.show()
 
-    #def __init__(self):
-    def __init__(self, parent=None, message=""):
-
-        'modificar desde aqui a Qt'
-        #gtkbuilder = Gtk.Builder()
-        #gtkbuilder.add_from_file(GLADE_FILE)
+    def __init__(self):
+        gtkbuilder = Gtk.Builder()
+        gtkbuilder.add_from_file(GLADE_FILE)
 
         #initialize the glade objects
-
-        self.label_version = label_version
+        self.label_version = gtkbuilder.get_object('label_version')
         self.about_dialog = gtkbuilder.get_object('about_dialog')
         self.host_entry = gtkbuilder.get_object('host_entry')
         self.host_entry_cmbox = gtkbuilder.get_object('host_entry_cmbox')
@@ -756,9 +751,9 @@ class ConnectionManager:
         self.read_hostsfile()
 
         signals = {
-            'on_main_dialog_destroy' : self.close, #Gtk.main_quit,
-            'on_cancel_btn_clicked' : self.quit_event, #Gtk.main_quit,
-            'on_quit_menu_activate' : self.quit_event, #Gtk.main_quit,
+            'on_main_dialog_destroy' : Gtk.main_quit,
+            'on_cancel_btn_clicked' : Gtk.main_quit,
+            'on_quit_menu_activate' : Gtk.main_quit,
             'on_hosts_menu_quit_activate' : self.on_hosts_cancel_btn_clicked,
             'on_connect_btn_clicked' : self.on_connect_btn_clicked,
             'on_host_entry_activate' : self.on_connect_btn_clicked,
@@ -810,5 +805,5 @@ class ConnectionManager:
 
 if __name__ == "__main__":
     connectionmanager = ConnectionManager()
-    main()
+    Gtk.main()
 
